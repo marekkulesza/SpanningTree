@@ -1,4 +1,7 @@
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -10,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 /**
@@ -22,7 +26,7 @@ public class PaintApp extends Application {
 
     // TODO: Instance Variables for View Components and Model
     GraphicsContext gc;
-    private ArrayList<Object> objectsArrayList = new ArrayList<>();
+    private ArrayList<ComputerObjects> objectsArrayList = new ArrayList<>();
     Canvas canvas = new Canvas(800,390);
 
     //Labels
@@ -37,35 +41,36 @@ public class PaintApp extends Application {
     //Buttons
 
 
-    Button cisdoSwitch = new Button("Circle");
-    Button nvtSwitch = new Button("Square");
+    Button cisdoSwitchButton = new Button("Circle");
+    Button nvtSwitchButton = new Button("Square");
     Button drawButton = new Button("Draw");
     Button undoButton = new Button("Undo");
 
-    ArrayList<Button> switchButtonsSelection = new ArrayList<>();
+    ObservableList<Button> switchButtonsSelection = FXCollections.observableArrayList();
+
+    ActionListener buttonListener = new ActionListener() {
+        @Override
+        public void actionPerformed(java.awt.event.ActionEvent e) {
+            Object o = e.getSource();
+
+            if (o == cisdoSwitchButton) {
+                System.out.println("cisdoSwitchGo");
+            }
+
+            if (o == nvtSwitchButton) {
+                System.out.println("Nvtpressed");
+            }
+        }
+    };
 
 
-    /**
-     * the set circle method, this is basically to show
-     * that the circle draw is on.
-     *
-     * @param event sets the circle to disabled and square to enable
-     */
-    private void switchSelection(ActionEvent event) {
-        cisdoSwitch.setDisable(true);
-        nvtSwitch.setDisable(false);
+    private void switchSelectionListener() {
+        for (Button button: switchButtonsSelection) {
+            button.setDisable(false);
+        }
     }
 
-    /**
-     * the set circle method, this is basically to show
-     * that the square draw is on.
-     *
-     * @param event sets the circle to enable and square to disabled
-     */
-    private void setSquare(ActionEvent event) {
-        cisdoSwitch.setDisable(false);
-        nvtSwitch.setDisable(true);
-    }
+
 
     /**
      * undos the last object drawn then redraws the whole canvas-1
@@ -78,7 +83,7 @@ public class PaintApp extends Application {
         gc.setFill(Color.LIGHTBLUE);
         gc.fillRect(0,0,800,450);
 
-        for (Object geo : objectsArrayList) {
+        for (ComputerObjects geo : objectsArrayList) {
             geo.draw(gc);
         }
         undoButton.setDisable(objectsArrayList.isEmpty());
@@ -102,27 +107,24 @@ public class PaintApp extends Application {
 
         //Labels
         topLabel = new Label("Press Draw or Click Canvas for a Circle");
-        locationLabel = new Label ("Location: ");
-        colourLabel = new Label("Colour: ");
-        sizeLabel = new Label("Size: ");
         errorLabel = new Label("No Errors ");
 
         //Button
-        cisdoSwitch = new Button("CisdoSwitch");
-        nvtSwitch = new Button("NvtSwitch");
+        cisdoSwitchButton = new Button("CisdoSwitch");
+        nvtSwitchButton = new Button("NvtSwitch");
         undoButton = new Button("Undo");
-        cisdoSwitch.setDisable(true); //Default to a circle
 
         //Text
 
 
         //ArrayStuff
-        switchButtonsSelection.add(cisdoSwitch);
-        switchButtonsSelection.add(nvtSwitch);
+        switchButtonsSelection.add(cisdoSwitchButton);
+        switchButtonsSelection.add(nvtSwitchButton);
 
         // 3. Add components to the root
-        root.getChildren().addAll(canvas,topLabel,locationLabel,colourLabel,sizeLabel, cisdoSwitch,
-                nvtSwitch,drawButton,undoButton,errorLabel);
+        root.getChildren().addAll(canvas,topLabel,
+                cisdoSwitchButton, nvtSwitchButton,
+                drawButton,undoButton,errorLabel);
 
         // 4. Configure the components (colors, fonts, size, location)
         gc = canvas.getGraphicsContext2D();
@@ -132,15 +134,13 @@ public class PaintApp extends Application {
         //Labels
         topLabel.relocate(300,0);
         topLabel.setTextAlignment(TextAlignment.CENTER);
-        locationLabel.relocate(120,400);
-        colourLabel.relocate(340,400);
 
         errorLabel.relocate(400, 430);
         errorLabel.setTextAlignment(TextAlignment.CENTER);
 
         //Buttons
-        cisdoSwitch.relocate(10,400);
-        nvtSwitch.relocate(60,400);
+        cisdoSwitchButton.relocate(10,400);
+        nvtSwitchButton.relocate(100,400);
         drawButton.relocate(640,400);
         undoButton.relocate(690,400);
         undoButton.setDisable(objectsArrayList.isEmpty());
@@ -149,9 +149,13 @@ public class PaintApp extends Application {
 
 
         // 5. Add Event Handlers and do final setup
-        canvas.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_PRESSED, this::pressHandler);
-        cisdoSwitch.setOnAction(this::switchSelection);
-        nvtSwitch.setOnAction(this::setSquare);
+        for (Button button: switchButtonsSelection) {
+            button.textProperty().addListener();
+        }
+
+
+        switchButtonsSelection.addListener();
+
         undoButton.setOnAction(this::undoButtonAction);
 
         // 6. Show the stage
