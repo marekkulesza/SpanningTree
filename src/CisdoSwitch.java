@@ -1,12 +1,9 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class NvtPhybridgeSwitch extends Switches{
+public class CisdoSwitch extends Switches{
 
-    CisdoSwitch uplink1;
-    CisdoSwitch uplink2;
-
-    public NvtPhybridgeSwitch(String name, Double xPosition, Double yPosition, Color color) {
+    public CisdoSwitch(String name, Double xPosition, Double yPosition, Color color) {
         super(name, xPosition, yPosition, color);
     }
 
@@ -18,4 +15,8 @@ public class NvtPhybridgeSwitch extends Switches{
         gc.fillText(name,getxPosition()-40,getyPosition()-35);
     }
 
+    @Override
+    public String toString() {
+        return "cisdoSwitch{} " + super.toString();
+    }
 }

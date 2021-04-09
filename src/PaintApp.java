@@ -1,6 +1,5 @@
 import javafx.application.Application;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -13,7 +12,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 /**
@@ -48,29 +46,37 @@ public class PaintApp extends Application {
 
     ObservableList<Button> switchButtonsSelection = FXCollections.observableArrayList();
 
-    ActionListener buttonListener = new ActionListener() {
-        @Override
-        public void actionPerformed(java.awt.event.ActionEvent e) {
-            Object o = e.getSource();
 
-            if (o == cisdoSwitchButton) {
-                System.out.println("cisdoSwitchGo");
-            }
-
-            if (o == nvtSwitchButton) {
-                System.out.println("Nvtpressed");
-            }
-        }
-    };
-
-
-    private void switchSelectionListener() {
+    private void switchSelection(ActionEvent event) {
+        Object pressed = event.getSource();
         for (Button button: switchButtonsSelection) {
             button.setDisable(false);
         }
+
+        for (Button button : switchButtonsSelection) {
+            if (pressed == button){
+                button.setDisable(true);
+            }
+        }
     }
 
+    private void pressHandler(javafx.scene.input.MouseEvent me){
 
+        if (cisdoSwitchButton.isDisable()) {
+            CisdoSwitch ciscdoSwitch = new CisdoSwitch("CisdoSwitch",me.getX(),me.getY()+20,Color.BLACK);
+            ciscdoSwitch.draw(gc);
+            objectsArrayList.add(ciscdoSwitch);
+            undoButton.setDisable(objectsArrayList.isEmpty());
+        }
+
+        if (nvtSwitchButton.isDisable()) {
+            NvtPhybridgeSwitch nvtSwitch = new NvtPhybridgeSwitch("PoLRE",me.getX(),me.getY()+20,Color.BLACK);
+            nvtSwitch.draw(gc);
+            objectsArrayList.add(nvtSwitch);
+            undoButton.setDisable(objectsArrayList.isEmpty());
+        }
+
+    }
 
     /**
      * undos the last object drawn then redraws the whole canvas-1
@@ -134,7 +140,6 @@ public class PaintApp extends Application {
         //Labels
         topLabel.relocate(300,0);
         topLabel.setTextAlignment(TextAlignment.CENTER);
-
         errorLabel.relocate(400, 430);
         errorLabel.setTextAlignment(TextAlignment.CENTER);
 
@@ -149,12 +154,12 @@ public class PaintApp extends Application {
 
 
         // 5. Add Event Handlers and do final setup
+        canvas.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_PRESSED, this::pressHandler);
+
         for (Button button: switchButtonsSelection) {
-            button.textProperty().addListener();
+            button.setOnAction(this::switchSelection);
         }
 
-
-        switchButtonsSelection.addListener();
 
         undoButton.setOnAction(this::undoButtonAction);
 

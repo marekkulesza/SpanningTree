@@ -14,6 +14,18 @@ public abstract class ComputerObjects implements Drawable{
         this.color = color;
     }
 
+    public Double getxPosition() {
+        return xPosition;
+    }
+
+    public Double getyPosition() {
+        return yPosition;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
     @Override
     public String toString() {
         return "Object{" +
