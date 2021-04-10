@@ -2,11 +2,13 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
@@ -25,20 +27,18 @@ public class PaintApp extends Application {
     // TODO: Instance Variables for View Components and Model
     GraphicsContext gc;
     private ArrayList<ComputerObjects> objectsArrayList = new ArrayList<>();
-    Canvas canvas = new Canvas(800,390);
+    Canvas canvas = new Canvas(800, 390);
 
     //Labels
-    Label topLabel;
-    Label locationLabel;
-    Label colourLabel;
-    Label sizeLabel;
     Label errorLabel;
 
     //TextFields
+    TextField configText = new TextField("");
+
 
     //Buttons
 
-
+    Button selectingButton = new Button("Selection Tool");
     Button cisdoSwitchButton = new Button("Circle");
     Button nvtSwitchButton = new Button("Square");
     Button drawButton = new Button("Draw");
@@ -46,37 +46,36 @@ public class PaintApp extends Application {
 
     ObservableList<Button> switchButtonsSelection = FXCollections.observableArrayList();
 
-
     private void switchSelection(ActionEvent event) {
         Object pressed = event.getSource();
-        for (Button button: switchButtonsSelection) {
+        for (Button button : switchButtonsSelection) {
             button.setDisable(false);
         }
 
         for (Button button : switchButtonsSelection) {
-            if (pressed == button){
+            if (pressed == button) {
                 button.setDisable(true);
             }
         }
     }
 
-    private void pressHandler(javafx.scene.input.MouseEvent me){
+    private void pressHandler(javafx.scene.input.MouseEvent me) {
 
         if (cisdoSwitchButton.isDisable()) {
-            CisdoSwitch ciscdoSwitch = new CisdoSwitch("CisdoSwitch",me.getX(),me.getY()+20,Color.BLACK);
+            CisdoSwitch ciscdoSwitch = new CisdoSwitch("CisdoSwitch", me.getX(), me.getY() + 20, Color.BLACK);
             ciscdoSwitch.draw(gc);
             objectsArrayList.add(ciscdoSwitch);
             undoButton.setDisable(objectsArrayList.isEmpty());
         }
 
         if (nvtSwitchButton.isDisable()) {
-            NvtPhybridgeSwitch nvtSwitch = new NvtPhybridgeSwitch("PoLRE",me.getX(),me.getY()+20,Color.BLACK);
+            NvtPhybridgeSwitch nvtSwitch = new NvtPhybridgeSwitch("PoLRE", me.getX(), me.getY() + 20, Color.BLACK);
             nvtSwitch.draw(gc);
             objectsArrayList.add(nvtSwitch);
             undoButton.setDisable(objectsArrayList.isEmpty());
         }
-
     }
+
 
     /**
      * undos the last object drawn then redraws the whole canvas-1
@@ -85,15 +84,16 @@ public class PaintApp extends Application {
      */
     private void undoButtonAction(ActionEvent event) {
 
-        objectsArrayList.remove(objectsArrayList.size()-1);
+        objectsArrayList.remove(objectsArrayList.size() - 1);
         gc.setFill(Color.LIGHTBLUE);
-        gc.fillRect(0,0,800,450);
+        gc.fillRect(0, 0, 800, 450);
 
         for (ComputerObjects geo : objectsArrayList) {
             geo.draw(gc);
         }
         undoButton.setDisable(objectsArrayList.isEmpty());
     }
+
     /**
      * This is where you create your components and the model and add event
      * handlers.
@@ -104,18 +104,18 @@ public class PaintApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Pane root = new Pane();
-        Scene scene = new Scene(root, 800, 450); // set the size here
+        Scene scene = new Scene(root, 1200, 450); // set the size here
         stage.setTitle("Painter"); // set the window title here
         stage.setScene(scene);
         // 1. Create the model
         // 2. Create the GUI components
-        canvas = new Canvas(800,390);
+        canvas = new Canvas(800, 390);
 
         //Labels
-        topLabel = new Label("Press Draw or Click Canvas for a Circle");
         errorLabel = new Label("No Errors ");
 
         //Button
+        selectingButton = new Button("Selection");
         cisdoSwitchButton = new Button("CisdoSwitch");
         nvtSwitchButton = new Button("NvtSwitch");
         undoButton = new Button("Undo");
@@ -126,40 +126,40 @@ public class PaintApp extends Application {
         //ArrayStuff
         switchButtonsSelection.add(cisdoSwitchButton);
         switchButtonsSelection.add(nvtSwitchButton);
+        switchButtonsSelection.add(selectingButton);
 
         // 3. Add components to the root
-        root.getChildren().addAll(canvas,topLabel,
-                cisdoSwitchButton, nvtSwitchButton,
-                drawButton,undoButton,errorLabel);
+        root.getChildren().addAll(canvas, cisdoSwitchButton, nvtSwitchButton, selectingButton, drawButton, undoButton, configText, errorLabel);
 
         // 4. Configure the components (colors, fonts, size, location)
         gc = canvas.getGraphicsContext2D();
         gc.setFill(Color.LIGHTBLUE);
-        gc.fillRect(0,0,800,450);
+        gc.fillRect(0, 0, 800, 450);
 
         //Labels
-        topLabel.relocate(300,0);
-        topLabel.setTextAlignment(TextAlignment.CENTER);
         errorLabel.relocate(400, 430);
         errorLabel.setTextAlignment(TextAlignment.CENTER);
 
         //Buttons
-        cisdoSwitchButton.relocate(10,400);
-        nvtSwitchButton.relocate(100,400);
-        drawButton.relocate(640,400);
-        undoButton.relocate(690,400);
+        selectingButton.relocate(10, 400);
+        cisdoSwitchButton.relocate(100, 400);
+        nvtSwitchButton.relocate(200, 400);
+        drawButton.relocate(640, 400);
+        undoButton.relocate(690, 400);
         undoButton.setDisable(objectsArrayList.isEmpty());
 
         //TextFields
-
+        configText.relocate(810, 0);
+        configText.setPrefWidth(380);
+        configText.setPrefHeight(390);
+        configText.setAlignment(Pos.TOP_LEFT);
 
         // 5. Add Event Handlers and do final setup
         canvas.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_PRESSED, this::pressHandler);
 
-        for (Button button: switchButtonsSelection) {
+        for (Button button : switchButtonsSelection) {
             button.setOnAction(this::switchSelection);
         }
-
 
         undoButton.setOnAction(this::undoButtonAction);
 

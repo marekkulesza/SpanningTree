@@ -6,8 +6,6 @@ public abstract class Switches extends ComputerObjects {
         super(name, xPosition, yPosition, color);
     }
 
-
-
     @Override
     public String toString() {
         return "Switches{" +
@@ -17,4 +15,5 @@ public abstract class Switches extends ComputerObjects {
                 ", color=" + color +
                 "} " + super.toString();
     }
+
 }
